@@ -3,6 +3,7 @@ package com.vss.wardrober.controllers;
 import com.vss.wardrober.DTOs.UserDTO;
 import com.vss.wardrober.models.UserModel;
 import com.vss.wardrober.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,8 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserModel> postUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserModel> postUser(@Valid
+                                              @RequestBody UserDTO userDTO) {
 
         var user = new UserModel();
         BeanUtils.copyProperties(userDTO, user);
@@ -58,7 +60,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserModel> putUser(@PathVariable Long id,
+    public ResponseEntity<UserModel> putUser(@Valid
+                                             @PathVariable Long id,
                                              @RequestBody UserDTO userDTO) {
 
         Optional<UserModel> user = userService.findById(id);

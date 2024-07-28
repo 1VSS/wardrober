@@ -11,13 +11,9 @@ public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    //@Column(nullable = false, unique = true)
-    @NotBlank
-    @NotNull
+    @Column(nullable = false, unique = true)
     private String username;
-    //@Column(nullable = false, unique = true)
-    @NotBlank
-    @NotNull
+    @Column(nullable = false, unique = true)
     private String email;
 
 

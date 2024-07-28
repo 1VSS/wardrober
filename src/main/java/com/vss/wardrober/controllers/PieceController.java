@@ -3,6 +3,7 @@ package com.vss.wardrober.controllers;
 import com.vss.wardrober.DTOs.PieceDTO;
 import com.vss.wardrober.models.PieceModel;
 import com.vss.wardrober.services.PieceService;
+import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,8 @@ public class PieceController {
     }
 
     @PostMapping
-    public ResponseEntity<PieceModel> postPiece(@RequestBody PieceDTO pieceDTO) {
+    public ResponseEntity<PieceModel> postPiece(@Valid
+                                                @RequestBody PieceDTO pieceDTO) {
         var pieceModel = new PieceModel();
         BeanUtils.copyProperties(pieceDTO, pieceModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(pieceService.save(pieceModel));
@@ -54,7 +56,8 @@ public class PieceController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PieceModel> putPiece(@PathVariable Long id,
+    public ResponseEntity<PieceModel> putPiece(@Valid
+                                               @PathVariable Long id,
                                                @RequestBody PieceDTO pieceDTO) {
 
         Optional<PieceModel> piece = pieceService.findById(id);

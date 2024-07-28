@@ -10,9 +10,9 @@ public class PieceModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @NotEmpty
+    //@NotEmpty
     private String name;
-    @NotEmpty
+    //@NotEmpty
     private String category;
     private String brand;
     private Boolean favorite;
