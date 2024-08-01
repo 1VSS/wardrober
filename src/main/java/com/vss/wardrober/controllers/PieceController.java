@@ -67,6 +67,7 @@ public class PieceController {
         var pieceModel = new PieceModel();
         BeanUtils.copyProperties(pieceDTO, pieceModel);
         pieceModel.setId(piece.get().getId());
+        pieceModel.setUserModel(piece.get().getUserModel());
         return ResponseEntity.status(HttpStatus.OK).body(pieceService.save(pieceModel));
 
     }

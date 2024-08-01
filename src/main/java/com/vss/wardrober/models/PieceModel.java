@@ -1,5 +1,6 @@
 package com.vss.wardrober.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 
@@ -16,6 +17,10 @@ public class PieceModel {
     private String category;
     private String brand;
     private Boolean favorite;
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "user_id")
+    private UserModel userModel;
 
     public Long getId() {
         return id;
@@ -55,5 +60,13 @@ public class PieceModel {
 
     public void setFavorite(Boolean favorite) {
         this.favorite = favorite;
+    }
+
+    public UserModel getUserModel() {
+        return userModel;
+    }
+
+    public void setUserModel(UserModel userModel) {
+        this.userModel = userModel;
     }
 }

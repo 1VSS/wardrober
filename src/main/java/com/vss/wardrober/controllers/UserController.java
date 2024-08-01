@@ -1,7 +1,10 @@
 package com.vss.wardrober.controllers;
 
+import com.vss.wardrober.DTOs.PieceDTO;
 import com.vss.wardrober.DTOs.UserDTO;
+import com.vss.wardrober.models.PieceModel;
 import com.vss.wardrober.models.UserModel;
+import com.vss.wardrober.services.PieceService;
 import com.vss.wardrober.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
@@ -18,9 +21,11 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final PieceService pieceService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PieceService pieceService) {
         this.userService = userService;
+        this.pieceService = pieceService;
     }
 
     @GetMapping
@@ -73,6 +78,22 @@ public class UserController {
         userModel.setId(user.get().getId());
         return ResponseEntity.status(HttpStatus.OK).body(userService.save(userModel));
     }
+
+    @PostMapping("/{id}/pieces")
+    public ResponseEntity<PieceModel> PostUserPiece(@Valid
+                                                @PathVariable Long id,
+                                                @RequestBody PieceDTO pieceDTO) {
+
+        Optional<UserModel> user = userService.findById(id);
+        if (user.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        var pieceModel = new PieceModel();
+        BeanUtils.copyProperties(pieceDTO, pieceModel);
+        pieceModel.setUserModel(user.get());
+        return ResponseEntity.status(HttpStatus.OK).body(pieceService.save(pieceModel));
+    }
+    
 }
 
 
