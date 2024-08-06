@@ -1,8 +1,11 @@
 package com.vss.wardrober.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+
+import java.util.List;
 
 @Entity
 @Table(name = "TB_PIECES")
@@ -17,10 +20,15 @@ public class PieceModel {
     private String category;
     private String brand;
     private Boolean favorite;
+
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_id")
     private UserModel userModel;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToMany(mappedBy = "pieces")
+    private List<PostModel> posts;
 
     public Long getId() {
         return id;
@@ -68,5 +76,13 @@ public class PieceModel {
 
     public void setUserModel(UserModel userModel) {
         this.userModel = userModel;
+    }
+
+    public List<PostModel> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<PostModel> posts) {
+        this.posts = posts;
     }
 }

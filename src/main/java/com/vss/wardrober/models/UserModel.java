@@ -22,6 +22,9 @@ public class UserModel {
     @JsonManagedReference
     @OneToMany(mappedBy = "userModel", cascade = CascadeType.ALL)
     private List<PieceModel> pieces;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "userModel", cascade = CascadeType.ALL)
+    private List<PostModel> posts;
 
 
     public Long getId() {
@@ -54,5 +57,13 @@ public class UserModel {
 
     public void setPieces(List<PieceModel> pieces) {
         this.pieces = pieces;
+    }
+
+    public List<PostModel> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<PostModel> posts) {
+        this.posts = posts;
     }
 }

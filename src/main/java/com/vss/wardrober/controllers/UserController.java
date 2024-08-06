@@ -1,10 +1,13 @@
 package com.vss.wardrober.controllers;
 
 import com.vss.wardrober.DTOs.PieceDTO;
+import com.vss.wardrober.DTOs.PostDTO;
 import com.vss.wardrober.DTOs.UserDTO;
 import com.vss.wardrober.models.PieceModel;
+import com.vss.wardrober.models.PostModel;
 import com.vss.wardrober.models.UserModel;
 import com.vss.wardrober.services.PieceService;
+import com.vss.wardrober.services.PostService;
 import com.vss.wardrober.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
@@ -15,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -22,10 +26,12 @@ public class UserController {
 
     private final UserService userService;
     private final PieceService pieceService;
+    private final PostService postService;
 
-    public UserController(UserService userService, PieceService pieceService) {
+    public UserController(UserService userService, PieceService pieceService, PostService postService) {
         this.userService = userService;
         this.pieceService = pieceService;
+        this.postService = postService;
     }
 
     @GetMapping
@@ -79,6 +85,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.save(userModel));
     }
 
+    /*
+
+    ============ PIECES METHODS ================
+
+     */
+
     @PostMapping("/{id}/pieces")
     public ResponseEntity<PieceModel> PostUserPiece(@Valid
                                                 @PathVariable Long id,
@@ -91,7 +103,54 @@ public class UserController {
         var pieceModel = new PieceModel();
         BeanUtils.copyProperties(pieceDTO, pieceModel);
         pieceModel.setUserModel(user.get());
-        return ResponseEntity.status(HttpStatus.OK).body(pieceService.save(pieceModel));
+        return ResponseEntity.status(HttpStatus.CREATED).body(pieceService.save(pieceModel));
+    }
+
+    /*
+
+    ============ POSTS METHODS ================
+
+     */
+
+    @PostMapping("/{id}/posts")
+    public ResponseEntity<PostModel> PostPost(@Valid
+                                              @PathVariable Long id,
+                                              @RequestBody PostDTO postDTO) {
+
+        Optional<UserModel> user = userService.findById(id);
+        if (user.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        var postmodel = new PostModel();
+
+        postmodel.setPieces(pieceService.findAllById(postDTO.piecesIds()));
+        postmodel.setUserModel(user.get());
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.save(postmodel));
+    }
+
+    @GetMapping("/{id}/posts")
+    public ResponseEntity<List<PostModel>> getPosts(@PathVariable Long id) {
+        Optional<UserModel> user = userService.findById(id);
+        if (user.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(user.get().getPosts());
+    }
+
+    @DeleteMapping("/{id}/posts/{id2}")
+    public ResponseEntity<String> deletePost(@PathVariable Long id, @PathVariable Long id2) {
+        Optional<UserModel> user = userService.findById(id);
+        if (user.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        Optional<PostModel> post = postService.findPostById(id2);
+        if (post.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+        }
+
+        postService.deleteById(id2);
+        return ResponseEntity.status(HttpStatus.OK).body("Post deleted");
     }
     
 }

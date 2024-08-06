@@ -1,6 +1,5 @@
 package com.vss.wardrober.services;
 
-import com.vss.wardrober.DTOs.PieceDTO;
 import com.vss.wardrober.models.PieceModel;
 import com.vss.wardrober.repositories.PieceRepository;
 import jakarta.transaction.Transactional;
@@ -34,6 +33,10 @@ public class PieceService {
     @Transactional
     public void deleteById(Long id) {
         pieceRepository.deleteById(id);
+    }
+
+    public List<PieceModel> findAllById(List<Long> ids) {
+        return pieceRepository.findAllById(ids);
     }
 }
 
