@@ -1,6 +1,7 @@
 package com.vss.wardrober.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -13,8 +14,9 @@ public class PostModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private int likes;
-//    @OneToMany(mappedBy = "postModel", cascade = CascadeType.ALL)
-//    private List<CommentModel> comments;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "postModel", cascade = CascadeType.ALL)
+    private List<CommentModel> comments;
     @ManyToMany
     @JoinTable(
             name = "posts_pieces",

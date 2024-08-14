@@ -5,6 +5,7 @@ import com.vss.wardrober.repositories.PostRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,6 +15,10 @@ public class PostService {
 
     public PostService(PostRepository postRepository) {
         this.postRepository = postRepository;
+    }
+
+    public List<PostModel> getAll() {
+        return postRepository.findAll();
     }
 
     public Optional<PostModel> findPostById(Long id) {

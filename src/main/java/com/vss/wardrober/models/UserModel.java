@@ -26,6 +26,16 @@ public class UserModel {
     @OneToMany(mappedBy = "userModel", cascade = CascadeType.ALL)
     private List<PostModel> posts;
 
+    public UserModel(Long id, String username, String email, List<PieceModel> pieces, List<PostModel> posts) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.pieces = pieces;
+        this.posts = posts;
+    }
+
+    public UserModel() {
+    }
 
     public Long getId() {
         return id;
