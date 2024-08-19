@@ -34,4 +34,8 @@ public class PostService {
     public void deleteById(Long id2) {
         postRepository.deleteById(id2);
     }
+
+    public List<PostModel> findPostByPiece (String piece) {
+        return postRepository.findPostByPieces_name(piece);
+    }
 }
