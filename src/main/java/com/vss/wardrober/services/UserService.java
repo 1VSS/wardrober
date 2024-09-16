@@ -3,6 +3,7 @@ package com.vss.wardrober.services;
 import com.vss.wardrober.models.UserModel;
 import com.vss.wardrober.repositories.UserRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,5 +34,9 @@ public class UserService {
     @Transactional
     public void deleteById(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public Optional<UserModel> findByUsername(@NotBlank(message = "Username is required") String username) {
+        return userRepository.findByUsername(username);
     }
 }

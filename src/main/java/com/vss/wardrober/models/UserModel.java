@@ -2,9 +2,11 @@ package com.vss.wardrober.models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.vss.wardrober.DTOs.LoginRequestDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ public class UserModel {
     private Long id;
     @Column(nullable = false, unique = true)
     private String username;
+    @Column(nullable = false)
+    private String password;
     @Column(nullable = false, unique = true)
     private String email;
     @JsonManagedReference
@@ -26,9 +30,10 @@ public class UserModel {
     @OneToMany(mappedBy = "userModel", cascade = CascadeType.ALL)
     private List<PostModel> posts;
 
-    public UserModel(Long id, String username, String email, List<PieceModel> pieces, List<PostModel> posts) {
+    public UserModel(Long id, String username, String password, String email, List<PieceModel> pieces, List<PostModel> posts) {
         this.id = id;
         this.username = username;
+        this.password = password;
         this.email = email;
         this.pieces = pieces;
         this.posts = posts;
@@ -75,5 +80,19 @@ public class UserModel {
 
     public void setPosts(List<PostModel> posts) {
         this.posts = posts;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public boolean isLoginCorrect(LoginRequestDTO loginRequestDTO, PasswordEncoder passwordEncoder) {
+
+        return passwordEncoder.matches(loginRequestDTO.password(), this.password);
+
     }
 }

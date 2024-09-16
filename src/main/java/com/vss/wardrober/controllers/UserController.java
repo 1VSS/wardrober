@@ -16,6 +16,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -31,11 +33,14 @@ public class UserController {
     private final PostService postService;
     private final CommentService commentService;
 
-    public UserController(UserService userService, PieceService pieceService, PostService postService, CommentService commentService) {
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public UserController(UserService userService, PieceService pieceService, PostService postService, CommentService commentService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userService = userService;
         this.pieceService = pieceService;
         this.postService = postService;
         this.commentService = commentService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @GetMapping
@@ -57,8 +62,14 @@ public class UserController {
     public ResponseEntity<UserModel> postUser(@Valid
                                               @RequestBody UserDTO userDTO) {
 
+        var userFromDB = userService.findByUsername(userDTO.username());
+        if (userFromDB.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
         var user = new UserModel();
         BeanUtils.copyProperties(userDTO, user);
+        user.setPassword(bCryptPasswordEncoder.encode(userDTO.password()));
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(user));
 
     }
@@ -87,74 +98,6 @@ public class UserController {
         BeanUtils.copyProperties(userDTO, userModel);
         userModel.setId(user.get().getId());
         return ResponseEntity.status(HttpStatus.OK).body(userService.save(userModel));
-    }
-
-    /*
-
-    ============ PIECES METHODS ================
-
-     */
-
-    @PostMapping("/{id}/pieces")
-    public ResponseEntity<PieceModel> PostUserPiece(@Valid
-                                                @PathVariable Long id,
-                                                @RequestBody PieceDTO pieceDTO) {
-
-        Optional<UserModel> user = userService.findById(id);
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-        var pieceModel = new PieceModel();
-        BeanUtils.copyProperties(pieceDTO, pieceModel);
-        pieceModel.setUserModel(user.get());
-        return ResponseEntity.status(HttpStatus.CREATED).body(pieceService.save(pieceModel));
-    }
-
-    /*
-
-    ============ POSTS METHODS ================
-
-     */
-
-    @PostMapping("/{id}/posts")
-    public ResponseEntity<PostModel> PostPost(@Valid
-                                              @PathVariable Long id,
-                                              @RequestBody PostDTO postDTO) {
-
-        Optional<UserModel> user = userService.findById(id);
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-        var postmodel = new PostModel();
-
-        postmodel.setPieces(pieceService.findAllById(postDTO.piecesIds()));
-        postmodel.setUserModel(user.get());
-        return ResponseEntity.status(HttpStatus.CREATED).body(postService.save(postmodel));
-    }
-
-    @GetMapping("/{id}/posts")
-    public ResponseEntity<List<PostModel>> getPosts(@PathVariable Long id) {
-        Optional<UserModel> user = userService.findById(id);
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(user.get().getPosts());
-    }
-
-    @DeleteMapping("/{id}/posts/{id2}")
-    public ResponseEntity<String> deletePost(@PathVariable Long id, @PathVariable Long id2) {
-        Optional<UserModel> user = userService.findById(id);
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-        Optional<PostModel> post = postService.findPostById(id2);
-        if (post.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
-        }
-
-        postService.deleteById(id2);
-        return ResponseEntity.status(HttpStatus.OK).body("Post deleted");
     }
 
     /*

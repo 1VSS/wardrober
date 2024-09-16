@@ -46,6 +46,7 @@ class UserServiceTest {
             var input = new UserModel(
                     1L,
                     "username",
+                    "123",
                     "email",
                     null,
                     null
@@ -75,6 +76,7 @@ class UserServiceTest {
             var input = new UserModel(
                     1L,
                     "username",
+                    "123",
                     "email",
                     null,
                     null
@@ -120,9 +122,11 @@ class UserServiceTest {
             var input = new UserModel(
                     1L,
                     "username",
+                    "123",
                     "email",
                     null,
                     null
+
 
             );
             var userList = List.of(input).size();
@@ -148,6 +152,7 @@ class UserServiceTest {
             var input = new UserModel(
                     1L,
                     "username",
+                    "123",
                     "email",
                     null,
                     null
